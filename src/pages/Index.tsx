@@ -1,11 +1,10 @@
 import { useState } from 'react';
 import { useExpenses } from '@/hooks/useExpenses';
-import { formatAmount, getToday, getMonthKey, getMonthExpenses } from '@/lib/expenses';
+import { getToday, getMonthKey, getMonthExpenses } from '@/lib/expenses';
 import ExpenseInput from '@/components/ExpenseInput';
 import ExpenseList from '@/components/ExpenseList';
 import MonthlyReport from '@/components/MonthlyReport';
 import { Receipt, BarChart3, PenLine } from 'lucide-react';
-import { cn } from '@/lib/utils';
 
 type Tab = 'input' | 'list' | 'report';
 
