@@ -1,3 +1,5 @@
+export type TransactionType = 'expense' | 'income';
+
 export interface Expense {
   id: string;
   amount: number;
@@ -5,6 +7,7 @@ export interface Expense {
   category: string;
   memo: string;
   date: string; // YYYY-MM-DD
+  type: TransactionType;
   createdAt: number;
 }
 
@@ -20,20 +23,32 @@ const CATEGORY_KEYWORDS: Record<string, string[]> = {
   '경조사': ['축의금', '부의금', '선물', '생일', '기념일', '화환'],
 };
 
-export function detectCategory(text: string): string {
+const INCOME_KEYWORDS: Record<string, string[]> = {
+  '급여': ['월급', '급여', '봉급', '연봉', '상여금', '보너스', '성과급'],
+  '부수입': ['부수입', '알바', '아르바이트', '프리랜서', '외주', '용돈'],
+  '투자': ['배당', '이자', '투자수익', '주식', '펀드', '수익금'],
+  '환급': ['환급', '캐시백', '리워드', '포인트', '환불'],
+  '기타수입': [],
+};
+
+export function detectCategory(text: string, type: TransactionType): string {
   const lower = text.toLowerCase();
-  for (const [category, keywords] of Object.entries(CATEGORY_KEYWORDS)) {
-    if (keywords.some(kw => lower.includes(kw))) return category;
+  const keywords = type === 'income' ? INCOME_KEYWORDS : CATEGORY_KEYWORDS;
+  for (const [category, kws] of Object.entries(keywords)) {
+    if (kws.some(kw => lower.includes(kw))) return category;
   }
-  return '기타';
+  return type === 'income' ? '기타수입' : '기타';
 }
 
-export function parseExpenseInput(input: string): { label: string; amount: number; memo: string; category: string } | null {
+export function parseExpenseInput(input: string): { label: string; amount: number; memo: string; category: string; type: TransactionType } | null {
   const trimmed = input.trim();
   if (!trimmed) return null;
 
-  // Try patterns: "label amount memo" or "label amount"
-  const match = trimmed.match(/^(.+?)\s+(\d[\d,]*)\s*(.*)$/);
+  // Check for + prefix → income
+  const isIncome = trimmed.startsWith('+');
+  const cleaned = isIncome ? trimmed.slice(1).trim() : trimmed;
+
+  const match = cleaned.match(/^(.+?)\s+(\d[\d,]*)\s*(.*)$/);
   if (!match) return null;
 
   const label = match[1].trim();
@@ -42,8 +57,9 @@ export function parseExpenseInput(input: string): { label: string; amount: numbe
 
   if (isNaN(amount) || amount <= 0) return null;
 
-  const category = detectCategory(label + ' ' + memo);
-  return { label, amount, memo, category };
+  const type: TransactionType = isIncome ? 'income' : 'expense';
+  const category = detectCategory(label + ' ' + memo, type);
+  return { label, amount, memo, category, type };
 }
 
 const STORAGE_KEY = 'household-expenses';
@@ -51,7 +67,10 @@ const STORAGE_KEY = 'household-expenses';
 export function loadExpenses(): Expense[] {
   try {
     const data = localStorage.getItem(STORAGE_KEY);
-    return data ? JSON.parse(data) : [];
+    if (!data) return [];
+    const parsed = JSON.parse(data) as Expense[];
+    // Migrate old data without type
+    return parsed.map(e => ({ ...e, type: e.type || 'expense' }));
   } catch {
     return [];
   }
@@ -115,4 +134,9 @@ export function formatDateLabel(dateStr: string): string {
   const d = new Date(dateStr + 'T00:00:00');
   const days = ['일', '월', '화', '수', '목', '금', '토'];
   return `${d.getMonth() + 1}월 ${d.getDate()}일 (${days[d.getDay()]})`;
+}
+
+/** Net total: income - expense */
+export function calcNetTotal(expenses: Expense[]): number {
+  return expenses.reduce((s, e) => e.type === 'income' ? s + e.amount : s - e.amount, 0);
 }
