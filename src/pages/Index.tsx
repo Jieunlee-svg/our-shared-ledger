@@ -15,10 +15,6 @@ const Index = () => {
   const today = getToday();
   const currentMonth = getMonthKey(today);
   const monthExpenses = getMonthExpenses(expenses, currentMonth);
-
-  const monthIncome = monthExpenses.filter(e => e.type === 'income').reduce((s, e) => s + e.amount, 0);
-  const monthExpenseTotal = monthExpenses.filter(e => e.type !== 'income').reduce((s, e) => s + e.amount, 0);
-  const todayExpenses = expenses.filter(e => e.date === today);
   const todayNet = todayExpenses.reduce((s, e) => e.type === 'income' ? s + e.amount : s - e.amount, 0);
 
   return (
