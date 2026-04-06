@@ -43,7 +43,7 @@ export function detectCategory(text: string, type: TransactionType): string {
   for (const [category, kws] of Object.entries(keywords)) {
     if (kws.some(kw => lower.includes(kw))) return category;
   }
-  return type === 'income' ? '기타수입' : '기타';
+  return type === 'income' ? '기타수입' : '직접 입력';
 }
 
 export function parseExpenseInput(input: string): { label: string; amount: number; memo: string; category: string; type: TransactionType } | null {
