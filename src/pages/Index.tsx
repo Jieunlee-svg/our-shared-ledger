@@ -24,28 +24,9 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-background flex flex-col max-w-lg mx-auto">
-      {/* Header Summary */}
+      {/* Header */}
       <header className="px-5 pt-8 pb-4">
-        <h1 className="text-2xl font-bold text-foreground mb-4">우리집 가계부 💰</h1>
-        <div className="grid grid-cols-3 gap-2">
-          <div className="rounded-2xl bg-card p-3 border border-border shadow-sm">
-            <p className="text-xs text-muted-foreground">이번 달 수입</p>
-            <p className="text-lg amount-display text-accent mt-1">+{formatAmount(monthIncome)}<span className="text-xs font-normal">원</span></p>
-          </div>
-          <div className="rounded-2xl bg-card p-3 border border-border shadow-sm">
-            <p className="text-xs text-muted-foreground">이번 달 지출</p>
-            <p className="text-lg amount-display text-card-foreground mt-1">{formatAmount(monthExpenseTotal)}<span className="text-xs font-normal">원</span></p>
-          </div>
-          <div className="rounded-2xl bg-card p-3 border border-border shadow-sm">
-            <p className="text-xs text-muted-foreground">오늘</p>
-            <p className={cn(
-              "text-lg amount-display mt-1",
-              todayNet >= 0 ? "text-accent" : "text-card-foreground"
-            )}>
-              {todayNet >= 0 ? '+' : ''}{formatAmount(Math.abs(todayNet))}<span className="text-xs font-normal">원</span>
-            </p>
-          </div>
-        </div>
+        <h1 className="text-2xl font-bold text-foreground">우리집 가계부 💰</h1>
       </header>
 
       {/* Content */}
