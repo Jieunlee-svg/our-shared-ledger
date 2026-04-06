@@ -1,5 +1,6 @@
 import { type Expense, formatAmount, formatDateLabel, groupByDate } from '@/lib/expenses';
 import { Trash2 } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 interface ExpenseListProps {
   expenses: Expense[];
@@ -7,16 +8,10 @@ interface ExpenseListProps {
 }
 
 const CATEGORY_EMOJI: Record<string, string> = {
-  '식비': '🍚',
-  '카페': '☕',
-  '마트/장보기': '🛒',
-  '교통': '🚕',
-  '쇼핑': '🛍️',
-  '의료': '🏥',
-  '문화/여가': '🎬',
-  '생활': '🏠',
-  '경조사': '💐',
-  '기타': '📝',
+  '식비': '🍚', '카페': '☕', '마트/장보기': '🛒', '교통': '🚕',
+  '쇼핑': '🛍️', '의료': '🏥', '문화/여가': '🎬', '생활': '🏠',
+  '경조사': '💐', '기타': '📝',
+  '급여': '💰', '부수입': '💵', '투자': '📈', '환급': '🔄', '기타수입': '💸',
 };
 
 export default function ExpenseList({ expenses, onDelete }: ExpenseListProps) {
@@ -27,7 +22,7 @@ export default function ExpenseList({ expenses, onDelete }: ExpenseListProps) {
     return (
       <div className="flex flex-col items-center justify-center py-20 text-muted-foreground">
         <p className="text-lg">아직 기록이 없어요</p>
-        <p className="text-sm mt-1">위에서 지출을 입력해보세요 ✨</p>
+        <p className="text-sm mt-1">위에서 지출/수입을 입력해보세요 ✨</p>
       </div>
     );
   }
@@ -36,12 +31,16 @@ export default function ExpenseList({ expenses, onDelete }: ExpenseListProps) {
     <div className="px-5 pb-24">
       {sortedDates.map(date => {
         const items = groups[date];
-        const dayTotal = items.reduce((s, e) => s + e.amount, 0);
+        const dayIncome = items.filter(e => e.type === 'income').reduce((s, e) => s + e.amount, 0);
+        const dayExpense = items.filter(e => e.type !== 'income').reduce((s, e) => s + e.amount, 0);
         return (
           <div key={date} className="mb-6">
             <div className="flex items-center justify-between mb-2">
               <h3 className="text-sm font-medium text-muted-foreground">{formatDateLabel(date)}</h3>
-              <span className="text-sm font-semibold text-foreground">{formatAmount(dayTotal)}원</span>
+              <div className="flex items-center gap-2 text-sm">
+                {dayIncome > 0 && <span className="font-semibold text-accent">+{formatAmount(dayIncome)}</span>}
+                {dayExpense > 0 && <span className="font-semibold text-foreground">-{formatAmount(dayExpense)}</span>}
+              </div>
             </div>
             <div className="space-y-2">
               {items.map(expense => (
@@ -57,8 +56,11 @@ export default function ExpenseList({ expenses, onDelete }: ExpenseListProps) {
                       {expense.memo && ` · ${expense.memo}`}
                     </p>
                   </div>
-                  <span className="amount-display text-card-foreground whitespace-nowrap">
-                    {formatAmount(expense.amount)}원
+                  <span className={cn(
+                    "amount-display whitespace-nowrap",
+                    expense.type === 'income' ? "text-accent" : "text-card-foreground"
+                  )}>
+                    {expense.type === 'income' ? '+' : '-'}{formatAmount(expense.amount)}원
                   </span>
                   <button
                     onClick={() => onDelete(expense.id)}
