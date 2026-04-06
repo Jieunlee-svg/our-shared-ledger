@@ -27,6 +27,7 @@ const CATEGORY_KEYWORDS: Record<string, string[]> = {
   '보험료': ['보험', '실비', '생명보험', '화재보험'],
   '공동 저축/투자': ['저축', '적금', '투자', '펀드', '주식', 'ETF', 'ISA'],
   '비상금/예비비': ['비상금', '예비', '긴급'],
+  '개인 용돈': ['용돈', '개인'],
 };
 
 const INCOME_KEYWORDS: Record<string, string[]> = {
