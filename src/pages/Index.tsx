@@ -21,7 +21,7 @@ const Index = () => {
     <div className="min-h-screen bg-background flex flex-col max-w-lg mx-auto">
       {/* Header */}
       <header className="px-5 pt-8 pb-4">
-        <h1 className="text-2xl font-bold text-foreground">우리집 가계부 💰</h1>
+        <h1 className="text-2xl font-bold text-foreground">가계쀼 💰</h1>
       </header>
 
       {/* Content */}
