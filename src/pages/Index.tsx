@@ -15,7 +15,7 @@ const Index = () => {
   const today = getToday();
   const currentMonth = getMonthKey(today);
   const monthExpenses = getMonthExpenses(expenses, currentMonth);
-  const todayNet = todayExpenses.reduce((s, e) => e.type === 'income' ? s + e.amount : s - e.amount, 0);
+  
 
   return (
     <div className="min-h-screen bg-background flex flex-col max-w-lg mx-auto">
