@@ -42,9 +42,6 @@ export default function ExpenseItem({ expense, onDelete, onUpdateCategory }: Exp
             type={expense.type}
             onChange={handleCategoryChange}
           />
-          {expense.memo && (
-            <span className="text-xs text-muted-foreground">· {expense.memo}</span>
-          )}
         </div>
       </div>
       <span className={cn(

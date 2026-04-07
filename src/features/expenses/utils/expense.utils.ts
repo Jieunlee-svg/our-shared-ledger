@@ -40,10 +40,9 @@ export function parseExpenseInput(input: string): ParsedExpense | null {
 
   if (!rest) return null;
 
-  // 첫 단어를 label, 나머지를 memo로
-  const parts = rest.split(/\s+/);
-  const label = parts[0];
-  const memo = parts.slice(1).join(' ');
+  // 금액 제외한 전체 텍스트를 label로 사용
+  const label = rest;
+  const memo = '';
 
   const type: TransactionType = isIncome ? 'income' : 'expense';
   const category = detectCategory(rest, type);
