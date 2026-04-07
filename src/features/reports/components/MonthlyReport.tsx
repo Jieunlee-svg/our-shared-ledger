@@ -1,7 +1,9 @@
-import { type Expense, formatAmount, getMonthExpenses, groupByCategory } from '@/lib/expenses';
+import { useState } from 'react';
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from 'recharts';
 import { ChevronLeft, ChevronRight, TrendingUp, TrendingDown, Wallet } from 'lucide-react';
-import { useState } from 'react';
+import { CATEGORY_EMOJI } from '@/constants/categories';
+import { formatAmount, getMonthExpenses, groupByCategory } from '@/features/expenses/utils/expense.utils';
+import type { Expense } from '@/features/expenses/types/expense.types';
 
 interface MonthlyReportProps {
   expenses: Expense[];
@@ -12,13 +14,6 @@ const COLORS = [
   'hsl(160, 45%, 45%)', 'hsl(280, 55%, 55%)', 'hsl(330, 65%, 60%)',
   'hsl(90, 50%, 50%)', 'hsl(20, 70%, 50%)',
 ];
-
-const CATEGORY_EMOJI: Record<string, string> = {
-  '식비': '🍚', '카페': '☕', '마트/장보기': '🛒', '교통': '🚕',
-  '쇼핑': '🛍️', '의료': '🏥', '문화/여가': '🎬', '생활': '🏠',
-  '경조사': '💐', '기타': '📝',
-  '급여': '💰', '부수입': '💵', '투자': '📈', '환급': '🔄', '기타수입': '💸',
-};
 
 export default function MonthlyReport({ expenses }: MonthlyReportProps) {
   const now = new Date();
@@ -144,7 +139,7 @@ export default function MonthlyReport({ expenses }: MonthlyReportProps) {
               return (
                 <div key={item.name} className="flex items-center gap-3">
                   <span className="w-3 h-3 rounded-full flex-shrink-0" style={{ backgroundColor: COLORS[i % COLORS.length] }} />
-                  <span className="text-sm text-card-foreground flex-1">{CATEGORY_EMOJI[item.name] || '📝'} {item.name}</span>
+                  <span className="text-sm text-card-foreground flex-1">{CATEGORY_EMOJI[item.name] ?? '📝'} {item.name}</span>
                   <span className="text-sm text-muted-foreground">{pct}%</span>
                   <span className="text-sm font-medium text-card-foreground">{formatAmount(item.value)}원</span>
                 </div>
@@ -163,7 +158,7 @@ export default function MonthlyReport({ expenses }: MonthlyReportProps) {
           <div className="space-y-2">
             {incomeChartData.map(item => (
               <div key={item.name} className="flex items-center gap-3">
-                <span className="text-base">{CATEGORY_EMOJI[item.name] || '💸'}</span>
+                <span className="text-base">{CATEGORY_EMOJI[item.name] ?? '💸'}</span>
                 <span className="text-sm text-card-foreground flex-1">{item.name}</span>
                 <span className="text-sm font-medium text-accent">+{formatAmount(item.value)}원</span>
               </div>
