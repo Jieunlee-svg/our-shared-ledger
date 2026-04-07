@@ -13,6 +13,13 @@ interface ExpenseInputProps {
   onAdd: (data: Omit<Expense, 'id' | 'createdAt'>) => void;
 }
 
+// 입력값 내 숫자에 자동으로 콤마 추가 (1000 → 1,000)
+function formatNumbersInText(text: string): string {
+  return text.replace(/,/g, '').replace(/\d+/g, m =>
+    parseInt(m, 10).toLocaleString('ko-KR')
+  );
+}
+
 export default function ExpenseInput({ onAdd }: ExpenseInputProps) {
   const [input, setInput] = useState('');
   const [feedback, setFeedback] = useState<string | null>(null);
@@ -136,7 +143,25 @@ export default function ExpenseInput({ onAdd }: ExpenseInputProps) {
           ref={inputRef}
           type="text"
           value={input}
-          onChange={e => setInput(e.target.value)}
+          onChange={e => {
+            const el = e.target;
+            const selStart = el.selectionStart ?? el.value.length;
+            // 커서 앞의 콤마 제외 글자 수 기억
+            const nonCommasBefore = el.value.slice(0, selStart).replace(/,/g, '').length;
+            const formatted = formatNumbersInText(el.value);
+            setInput(formatted);
+            // 포맷 후 커서 위치 복원
+            requestAnimationFrame(() => {
+              if (!inputRef.current) return;
+              let count = 0;
+              let newPos = formatted.length;
+              for (let i = 0; i < formatted.length; i++) {
+                if (count === nonCommasBefore) { newPos = i; break; }
+                if (formatted[i] !== ',') count++;
+              }
+              inputRef.current.setSelectionRange(newPos, newPos);
+            });
+          }}
           placeholder={mode === 'income' ? '예: 월급 3000000 또는 3000000 월급' : '예: 점심 12000 또는 12000 점심 김치찌개'}
           className={cn(
             'w-full rounded-2xl px-5 py-4 text-base placeholder:text-muted-foreground border focus:outline-none focus:ring-2 shadow-sm bg-card text-card-foreground',
