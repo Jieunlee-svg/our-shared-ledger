@@ -4,6 +4,17 @@ import { useMerchants } from '../hooks/useMerchants';
 import { CategoryPicker } from './CategoryPicker';
 import { Trash2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/ui/alert-dialog';
 import type { Expense } from '../types/expense.types';
 
 interface ExpenseItemProps {
@@ -42,12 +53,31 @@ export default function ExpenseItem({ expense, onDelete, onUpdateCategory }: Exp
       )}>
         {expense.type === 'income' ? '+' : '-'}{formatAmount(expense.amount)}원
       </span>
-      <button
-        onClick={() => onDelete(expense.id)}
-        className="opacity-0 group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-destructive ml-1"
-      >
-        <Trash2 className="h-4 w-4" />
-      </button>
+      <AlertDialog>
+        <AlertDialogTrigger asChild>
+          <button className="opacity-0 group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-destructive ml-1">
+            <Trash2 className="h-4 w-4" />
+          </button>
+        </AlertDialogTrigger>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>정말 삭제하시겠습니까?</AlertDialogTitle>
+            <AlertDialogDescription>
+              <span className="font-medium text-foreground">{expense.label}</span>
+              {' '}({formatAmount(expense.amount)}원) 내역이 영구 삭제돼요.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>취소</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => onDelete(expense.id)}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              삭제
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
