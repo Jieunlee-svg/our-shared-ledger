@@ -137,7 +137,7 @@ export default function ExpenseInput({ onAdd }: ExpenseInputProps) {
           type="text"
           value={input}
           onChange={e => setInput(e.target.value)}
-          placeholder={mode === 'income' ? '예: 월급 3000000' : '예: 점심 12000 김치찌개'}
+          placeholder={mode === 'income' ? '예: 월급 3000000 또는 3000000 월급' : '예: 점심 12000 또는 12000 점심 김치찌개'}
           className={cn(
             'w-full rounded-2xl px-5 py-4 text-base placeholder:text-muted-foreground border focus:outline-none focus:ring-2 shadow-sm bg-card text-card-foreground',
             mode === 'income' ? 'border-accent/30 focus:ring-accent/40' : 'border-border focus:ring-ring',

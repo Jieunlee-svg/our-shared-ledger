@@ -17,17 +17,37 @@ export function parseExpenseInput(input: string): ParsedExpense | null {
   const isIncome = trimmed.startsWith('+');
   const cleaned = isIncome ? trimmed.slice(1).trim() : trimmed;
 
-  const match = cleaned.match(/^(.+?)\s+(\d[\d,]*)\s*(.*)$/);
-  if (!match) return null;
+  // '원' 단위 제거 (예: 12,000원 → 12,000)
+  const normalized = cleaned.replace(/(\d[\d,]*)원/g, '$1');
 
-  const label = match[1].trim();
-  const amount = parseInt(match[2].replace(/,/g, ''), 10);
-  const memo = match[3]?.trim() || '';
+  // 텍스트에서 모든 숫자 추출
+  const numberMatches = [...normalized.matchAll(/(\d[\d,]*)/g)];
+  if (numberMatches.length === 0) return null;
 
+  // 가장 큰 숫자를 금액으로 사용 (예: "3월 점심 12000" → 12000)
+  const amountEntry = numberMatches.reduce((max, curr) =>
+    parseInt(curr[1].replace(/,/g, ''), 10) > parseInt(max[1].replace(/,/g, ''), 10) ? curr : max
+  );
+
+  const amount = parseInt(amountEntry[1].replace(/,/g, ''), 10);
   if (isNaN(amount) || amount <= 0) return null;
 
+  // 금액을 제거한 나머지 텍스트
+  const idx = amountEntry.index ?? 0;
+  const before = normalized.slice(0, idx).trim();
+  const after = normalized.slice(idx + amountEntry[0].length).trim();
+  const rest = [before, after].filter(Boolean).join(' ').trim();
+
+  if (!rest) return null;
+
+  // 첫 단어를 label, 나머지를 memo로
+  const parts = rest.split(/\s+/);
+  const label = parts[0];
+  const memo = parts.slice(1).join(' ');
+
   const type: TransactionType = isIncome ? 'income' : 'expense';
-  const category = detectCategory(label + ' ' + memo, type);
+  const category = detectCategory(rest, type);
+
   return { label, amount, memo, category, type };
 }
 
