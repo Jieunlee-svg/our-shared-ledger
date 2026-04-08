@@ -61,6 +61,21 @@ export async function updateExpenseCategory(id: string, category: string): Promi
   return rowToExpense(data);
 }
 
+export async function updateExpense(
+  id: string,
+  fields: Partial<Pick<Expense, 'label' | 'amount' | 'category' | 'date' | 'type'>>
+): Promise<Expense> {
+  const { data, error } = await supabase
+    .from('expenses')
+    .update(fields)
+    .eq('id', id)
+    .select()
+    .single();
+
+  if (error) throw error;
+  return rowToExpense(data);
+}
+
 // localStorage → Supabase 일회성 마이그레이션
 // Supabase에 데이터가 없을 때만 실행됨
 const LS_KEY = 'household-expenses';

@@ -6,9 +6,10 @@ interface ExpenseListProps {
   expenses: Expense[];
   onDelete: (id: string) => void;
   onUpdateCategory: (id: string, category: string) => void;
+  onUpdate: (id: string, fields: Partial<Pick<Expense, 'label' | 'amount' | 'category' | 'date' | 'type'>>) => Promise<void>;
 }
 
-export default function ExpenseList({ expenses, onDelete, onUpdateCategory }: ExpenseListProps) {
+export default function ExpenseList({ expenses, onDelete, onUpdateCategory, onUpdate }: ExpenseListProps) {
   const groups = groupByDate(expenses);
   const sortedDates = Object.keys(groups).sort((a, b) => b.localeCompare(a));
 
@@ -43,6 +44,7 @@ export default function ExpenseList({ expenses, onDelete, onUpdateCategory }: Ex
                   expense={expense}
                   onDelete={onDelete}
                   onUpdateCategory={onUpdateCategory}
+                  onUpdate={onUpdate}
                 />
               ))}
             </div>

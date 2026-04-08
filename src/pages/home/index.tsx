@@ -18,7 +18,7 @@ const TABS = [
 
 export default function Home() {
   useMigration();
-  const { expenses, add, remove, updateCategory } = useExpenses();
+  const { expenses, add, remove, updateCategory, update } = useExpenses();
   const [tab, setTab] = useState<Tab>('input');
 
   const today = getToday();
@@ -38,7 +38,7 @@ export default function Home() {
             <div className="px-5 pt-2">
               <h2 className="text-sm font-medium text-muted-foreground mb-3">최근 기록</h2>
             </div>
-            <ExpenseList expenses={expenses.slice(0, 10)} onDelete={remove} onUpdateCategory={updateCategory} />
+            <ExpenseList expenses={expenses.slice(0, 10)} onDelete={remove} onUpdateCategory={updateCategory} onUpdate={update} />
           </>
         )}
         {tab === 'list' && (
@@ -46,7 +46,7 @@ export default function Home() {
             <div className="px-5 pt-2 pb-2">
               <h2 className="text-sm font-medium text-muted-foreground">전체 내역</h2>
             </div>
-            <ExpenseList expenses={monthExpenses} onDelete={remove} onUpdateCategory={updateCategory} />
+            <ExpenseList expenses={monthExpenses} onDelete={remove} onUpdateCategory={updateCategory} onUpdate={update} />
           </>
         )}
         {tab === 'report' && <MonthlyReport expenses={expenses} />}

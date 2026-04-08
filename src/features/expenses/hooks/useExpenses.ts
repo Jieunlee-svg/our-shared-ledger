@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { fetchExpenses, createExpense, removeExpense, updateExpenseCategory } from '../api/expenses.api';
+import { fetchExpenses, createExpense, removeExpense, updateExpenseCategory, updateExpense } from '../api/expenses.api';
 import type { Expense } from '../types/expense.types';
 
 const QUERY_KEY = ['expenses'] as const;
@@ -36,11 +36,23 @@ export function useExpenses() {
     },
   });
 
+  const updateMutation = useMutation({
+    mutationFn: ({ id, fields }: { id: string; fields: Partial<Pick<Expense, 'label' | 'amount' | 'category' | 'date' | 'type'>> }) =>
+      updateExpense(id, fields),
+    onSuccess: (updated) => {
+      queryClient.setQueryData<Expense[]>(QUERY_KEY, prev =>
+        prev?.map(e => e.id === updated.id ? updated : e) ?? []
+      );
+    },
+  });
+
   return {
     expenses,
     isLoading,
     add: (data: Omit<Expense, 'id' | 'createdAt'>) => addMutation.mutate(data),
     remove: (id: string) => removeMutation.mutate(id),
     updateCategory: (id: string, category: string) => updateCategoryMutation.mutate({ id, category }),
+    update: (id: string, fields: Partial<Pick<Expense, 'label' | 'amount' | 'category' | 'date' | 'type'>>) =>
+      updateMutation.mutateAsync({ id, fields }),
   };
 }
