@@ -26,19 +26,18 @@ export default function MonthlyReport({ expenses }: MonthlyReportProps) {
   // 실제 지출이 있는 카테고리
   const categoryTotals = groupByCategory(expenseItems);
 
-  // 전체 카테고리 목록 (0원 포함) — 금액 큰 순 정렬, 0원은 뒤로
-  const allCategories = EXPENSE_CATEGORIES.map(cat => ({
+  // 전체 카테고리 목록 (기본 + 직접입력) — 금액 큰 순 정렬, 0원은 뒤로
+  const standardCategories = EXPENSE_CATEGORIES.map(cat => ({
     name: cat,
     value: categoryTotals[cat] ?? 0,
-  })).sort((a, b) => b.value - a.value);
+  }));
 
-  // 직접 입력 카테고리 (EXPENSE_CATEGORIES에 없는 것)
   const customCategories = Object.entries(categoryTotals)
     .filter(([cat]) => !EXPENSE_CATEGORIES.includes(cat))
-    .map(([name, value]) => ({ name, value }))
-    .sort((a, b) => b.value - a.value);
+    .map(([name, value]) => ({ name, value }));
 
-  const categoryList = [...customCategories, ...allCategories];
+  const categoryList = [...customCategories, ...standardCategories]
+    .sort((a, b) => b.value - a.value);
 
   // 수입 카테고리
   const incomeCategoryTotals = groupByCategory(incomeItems);
