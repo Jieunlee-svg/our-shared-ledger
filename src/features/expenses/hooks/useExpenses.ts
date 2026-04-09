@@ -4,16 +4,18 @@ import type { Expense } from '../types/expense.types';
 
 const QUERY_KEY = ['expenses'] as const;
 
-export function useExpenses() {
+export function useExpenses(coupleId: string | null) {
   const queryClient = useQueryClient();
 
   const { data: expenses = [], isLoading } = useQuery({
     queryKey: QUERY_KEY,
     queryFn: fetchExpenses,
+    enabled: !!coupleId,
   });
 
   const addMutation = useMutation({
-    mutationFn: createExpense,
+    mutationFn: (expense: Omit<Expense, 'id' | 'createdAt'>) =>
+      createExpense(expense, coupleId!),
     onSuccess: (newExpense) => {
       queryClient.setQueryData<Expense[]>(QUERY_KEY, prev => [newExpense, ...(prev ?? [])]);
     },

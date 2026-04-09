@@ -25,7 +25,10 @@ export async function fetchExpenses(): Promise<Expense[]> {
   return (data ?? []).map(rowToExpense);
 }
 
-export async function createExpense(expense: Omit<Expense, 'id' | 'createdAt'>): Promise<Expense> {
+export async function createExpense(
+  expense: Omit<Expense, 'id' | 'createdAt'>,
+  coupleId: string,
+): Promise<Expense> {
   const { data, error } = await supabase
     .from('expenses')
     .insert({
@@ -35,6 +38,7 @@ export async function createExpense(expense: Omit<Expense, 'id' | 'createdAt'>):
       memo: expense.memo,
       date: expense.date,
       type: expense.type,
+      couple_id: coupleId,
     })
     .select()
     .single();
