@@ -6,6 +6,7 @@ export async function signInWithKakao(redirectTo?: string) {
     provider: 'kakao',
     options: {
       redirectTo: redirectTo ?? window.location.origin + '/',
+      scopes: 'profile_nickname profile_image', // 이메일 제외 (비즈앱 인증 불필요)
     },
   });
   if (error) throw error;
