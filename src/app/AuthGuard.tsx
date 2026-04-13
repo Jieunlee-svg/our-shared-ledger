@@ -11,9 +11,11 @@ export function AuthGuard({ children }: { children: ReactNode }) {
   const [processingInvite, setProcessingInvite] = useState(false);
   const [inviteError, setInviteError] = useState('');
 
-  // URL에서 초대 토큰 읽기 (?invite=TOKEN)
+  // URL 또는 sessionStorage에서 초대 토큰 읽기
   const urlParams = new URLSearchParams(window.location.search);
-  const urlInviteToken = urlParams.get('invite') ?? undefined;
+  const urlInviteToken = urlParams.get('invite')
+    ?? sessionStorage.getItem('pending_invite_token')
+    ?? undefined;
 
   // 로그인 후 자동으로 초대 수락
   useEffect(() => {
@@ -24,7 +26,8 @@ export function AuthGuard({ children }: { children: ReactNode }) {
     setProcessingInvite(true);
     acceptInvitation(urlInviteToken, user.id)
       .then(() => {
-        // URL에서 invite 파라미터 제거
+        // 토큰 정리
+        sessionStorage.removeItem('pending_invite_token');
         const url = new URL(window.location.href);
         url.searchParams.delete('invite');
         window.history.replaceState({}, '', url.toString());

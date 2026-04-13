@@ -14,7 +14,10 @@ export function LoginPage({ inviteToken }: LoginPageProps) {
     setLoading(true);
     setError('');
     try {
-      // 현재 URL(초대 토큰 포함)을 로그인 후 돌아올 주소로 사용
+      // 카카오 OAuth 리다이렉트 중 URL이 날아갈 수 있으므로 sessionStorage에도 백업
+      if (inviteToken) {
+        sessionStorage.setItem('pending_invite_token', inviteToken);
+      }
       await signInWithKakao(window.location.href);
     } catch (e) {
       setError((e as Error).message);
