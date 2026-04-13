@@ -106,33 +106,14 @@ export async function getInvitationByToken(token: string): Promise<Invitation | 
   return data;
 }
 
-/** 초대 수락 — 커플에 user2로 참여 */
+/** 초대 수락 — RPC 함수로 RLS 우회해서 처리 */
 export async function acceptInvitation(token: string, userId: string): Promise<Couple> {
-  const invite = await getInvitationByToken(token);
-  if (!invite) throw new Error('초대 링크가 유효하지 않거나 만료되었습니다.');
-  if (invite.inviter_id === userId) throw new Error('본인의 초대 링크는 사용할 수 없어요.');
-
-  // 커플에 user2 등록
-  const { data: couple, error: coupleError } = await supabase
-    .from('couples')
-    .update({ user2_id: userId })
-    .eq('id', invite.couple_id)
-    .select()
-    .single();
-  if (coupleError) throw coupleError;
-
-  // 프로필 업데이트
-  await supabase
-    .from('profiles')
-    .upsert({ id: userId, couple_id: invite.couple_id });
-
-  // 초대 사용 완료 처리
-  await supabase
-    .from('invitations')
-    .update({ accepted_at: new Date().toISOString() })
-    .eq('id', invite.id);
-
-  return couple;
+  const { data, error } = await supabase.rpc('accept_invitation', {
+    p_token: token,
+    p_user_id: userId,
+  });
+  if (error) throw new Error(error.message);
+  return data as Couple;
 }
 
 export async function getPartnerProfile(couple: Couple, currentUserId: string): Promise<Profile | null> {
