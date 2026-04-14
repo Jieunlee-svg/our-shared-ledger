@@ -8,8 +8,8 @@ export function useExpenses(coupleId: string | null) {
   const queryClient = useQueryClient();
 
   const { data: expenses = [], isLoading } = useQuery({
-    queryKey: QUERY_KEY,
-    queryFn: fetchExpenses,
+    queryKey: [...QUERY_KEY, coupleId],
+    queryFn: () => fetchExpenses(coupleId!),
     enabled: !!coupleId,
   });
 

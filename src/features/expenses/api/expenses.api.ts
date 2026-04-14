@@ -14,10 +14,11 @@ function rowToExpense(row: Record<string, unknown>): Expense {
   };
 }
 
-export async function fetchExpenses(): Promise<Expense[]> {
+export async function fetchExpenses(coupleId: string): Promise<Expense[]> {
   const { data, error } = await supabase
     .from('expenses')
     .select('*')
+    .eq('couple_id', coupleId)
     .order('date', { ascending: false })
     .order('created_at', { ascending: false });
 
