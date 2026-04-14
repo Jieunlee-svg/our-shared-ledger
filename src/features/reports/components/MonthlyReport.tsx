@@ -136,26 +136,6 @@ export default function MonthlyReport({ expenses }: MonthlyReportProps) {
         </div>
       )}
 
-      {/* 인사이트 */}
-      {hasData && (
-        <div className="rounded-2xl bg-card p-4 border border-border shadow-sm">
-          <p className="text-xs text-muted-foreground mb-3">💡 인사이트</p>
-          <div className="space-y-2 text-sm text-card-foreground">
-            {totalExpense > 0 && categoryList[0]?.value > 0 && (
-              <p>
-                가장 많이 쓴 카테고리는 <strong>{CATEGORY_EMOJI[categoryList[0].name] ?? '📝'} {categoryList[0].name}</strong>이에요.
-                총 {formatAmount(categoryList[0].value)}원으로 전체의 {Math.round((categoryList[0].value / totalExpense) * 100)}%를 차지해요.
-              </p>
-            )}
-            {totalIncome > 0 && totalExpense > 0 && (
-              <p>
-                저축률은 <strong>{Math.round(((totalIncome - totalExpense) / totalIncome) * 100)}%</strong>예요.
-                {netTotal > 0 ? ' 잘 모으고 있어요! 🎉' : ' 수입보다 지출이 많아요. 조절해볼까요? 💪'}
-              </p>
-            )}
-          </div>
-        </div>
-      )}
     </div>
   );
 }
