@@ -6,6 +6,17 @@ import type { Couple, Profile } from '@/features/auth/api/couple.api';
 import { EXPENSE_CATEGORIES, INCOME_CATEGORIES, CATEGORY_EMOJI } from '@/constants/categories';
 import { signOut } from '@/features/auth/api/auth.api';
 import { cn } from '@/lib/utils';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/ui/alert-dialog';
 
 interface SettingsPageProps {
   user: User;
@@ -313,9 +324,30 @@ function TagRow({ emoji, name, onEdit, onDelete }: {
         <button onClick={onEdit} className="text-muted-foreground hover:text-foreground transition-colors p-1.5">
           <Edit2 className="h-4 w-4" />
         </button>
-        <button onClick={onDelete} className="text-muted-foreground hover:text-destructive transition-colors p-1.5">
-          <Trash2 className="h-4 w-4" />
-        </button>
+        <AlertDialog>
+          <AlertDialogTrigger asChild>
+            <button className="text-muted-foreground hover:text-destructive transition-colors p-1.5">
+              <Trash2 className="h-4 w-4" />
+            </button>
+          </AlertDialogTrigger>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>태그를 삭제하시겠습니까?</AlertDialogTitle>
+              <AlertDialogDescription>
+                <span className="font-medium text-foreground">{emoji} {name}</span> 태그가 목록에서 사라져요.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>취소</AlertDialogCancel>
+              <AlertDialogAction
+                onClick={onDelete}
+                className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              >
+                삭제
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
       </div>
     </div>
   );
