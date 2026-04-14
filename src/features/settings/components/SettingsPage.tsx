@@ -4,6 +4,7 @@ import { Edit2, Trash2, Plus } from 'lucide-react';
 import { createNewInvite } from '@/features/auth/api/couple.api';
 import type { Couple, Profile } from '@/features/auth/api/couple.api';
 import { EXPENSE_CATEGORIES, INCOME_CATEGORIES, CATEGORY_EMOJI } from '@/constants/categories';
+import { detectCategory } from '@/features/expenses/utils/expense.utils';
 import { signOut } from '@/features/auth/api/auth.api';
 import { cn } from '@/lib/utils';
 import {
@@ -67,6 +68,16 @@ export default function SettingsPage({ user, profile, couple, partner }: Setting
   const [addingType, setAddingType] = useState<'expense' | 'income' | null>(null);
   const [newEmoji, setNewEmoji] = useState('📌');
   const [newName, setNewName] = useState('');
+
+  const handleNewNameChange = (name: string) => {
+    setNewName(name);
+    const type = addingType ?? 'expense';
+    const category = detectCategory(name, type);
+    const fallback = type === 'income' ? '기타수입' : '직접 입력';
+    if (category !== fallback) {
+      setNewEmoji(CATEGORY_EMOJI[category] ?? '📌');
+    }
+  };
 
   const hasPartner = !!couple?.user2_id;
 
@@ -283,7 +294,7 @@ export default function SettingsPage({ user, profile, couple, partner }: Setting
                     <div className="px-4 py-3">
                       <EditRow
                         emoji={newEmoji} name={newName}
-                        onEmojiChange={setNewEmoji} onNameChange={setNewName}
+                        onEmojiChange={setNewEmoji} onNameChange={handleNewNameChange}
                         onSave={addTag} onCancel={() => { setAddingType(null); setNewName(''); setNewEmoji('📌'); }}
                         placeholder="태그 이름"
                       />
